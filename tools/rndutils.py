@@ -22,6 +22,15 @@ def random_str(length=9):
     return ''.join([random_char() for _ in range(length)])
 
 
+def random_numstr(length=9):
+    """Get string with digits
+
+    :param length: string's length (default = 9)
+    :return: str
+    """
+    return ''.join([str(random.randint(0, 9)) for _ in range(length)])
+
+
 def random_id():
     """Generate id between 100000 and 999999 inclusive
 

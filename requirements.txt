@@ -1,3 +1,5 @@
 requests
 ddt
 locustio
+seleniumbase
+mimesis

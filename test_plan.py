@@ -1,3 +1,0 @@
-plan = (
-    # TODO: add examples
-)

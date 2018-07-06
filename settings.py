@@ -13,7 +13,7 @@ LOG_OPTIONS = {
 # Endpoints
 #
 # Relative paths (_PATH) are used in locust scenarios
-# Absolute paths (_URL) are used in functional tests
+# Absolute paths (_URL) are used in API tests
 #
 PROTOCOL = 'http://'
 HOST = 'testhost'

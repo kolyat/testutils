@@ -1,8 +1,6 @@
 #!/bin/bash
 
 ENV=~/env/testenv/bin/activate
-TARGET=http://testhost
-
 env_status=-1
 
 function prepare() {
@@ -33,7 +31,7 @@ function cleanup() {
 }
 
 function func_test() {
-    echo "Running functional testing routines"
+    echo "Running functional tests"
     echo
     python3 ${PYTHONPATH}/run.py
     echo
@@ -41,11 +39,9 @@ function func_test() {
 }
 
 function load_test() {
-    LOAD_PATH=${PYTHONPATH}/load
     echo "Initializing Locust for load impact"
     echo
-    # TODO: path to example load scenario
-    locust --host=${TARGET} --locustfile=${LOAD_PATH}/auth.py
+    locust --host=http://testhost --locustfile=${PYTHONPATH}/load_test/auth.py
 }
 
 

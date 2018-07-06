@@ -1,5 +1,6 @@
 requests
 ddt
 locustio
+invokust
 seleniumbase
 mimesis

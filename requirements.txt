@@ -4,3 +4,6 @@ locustio
 invokust
 seleniumbase
 mimesis
+paramiko
+radar
+forgery_py

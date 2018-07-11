@@ -33,7 +33,7 @@ function cleanup() {
 function func_test() {
     echo "Running functional tests"
     echo
-    python3 ${PYTHONPATH}/run.py
+    python3 ${PYTHONPATH}/run.py --func
     echo
     echo
 }

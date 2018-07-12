@@ -11,7 +11,7 @@ Collection of examples and utilities for testing
 
 ##### Tools
 
-- ```reaper``` - tools for log parsing and sorting
+- ```reaper``` - tool for log parsing and sorting
 - ```ddtutils``` - auxiliary functions for data driven testing tool
 - ```gqlutils``` - client for GraphQL API
 - ```rndutils``` - random generators of strings and numbers

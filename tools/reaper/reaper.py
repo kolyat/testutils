@@ -173,24 +173,22 @@ if __name__ == '__main__':
         print('No refined logs are available')
         sys.exit(2)
     log_items = list()
-    dt_pattern = re.compile(
-        '(?P<day>\d\d)-(?P<month>\d\d)-(?P<year>\d{4}).'
-        '(?P<hour>\d\d):(?P<min>\d\d):(?P<sec>\d\d).(?P<ms>\d{3})'
-    )
     for processed_file in processed_files:
         pf = open(os.path.normpath(os.path.join(
             settings.PROCESSED_DIR, processed_file)), 'rt')
         for line in pf:
-            r = dt_pattern.search(line)
-            if r:
-                timestamp = datetime.datetime(
-                    int(r.group('year')), int(r.group('month')),
-                    int(r.group('day')), int(r.group('hour')),
-                    int(r.group('min')), int(r.group('sec')),
-                    int(r.group('ms')) * 1000
-                ).timestamp()
-                log_items.append(
-                    (timestamp, processed_file, line.replace('\n', '')))
+            for p in settings.compiled_time_patterns:
+                r = p.search(line)
+                if r:
+                    timestamp = datetime.datetime(
+                        int(r.group('year')), int(r.group('month')),
+                        int(r.group('day')), int(r.group('hour')),
+                        int(r.group('min')), int(r.group('sec')),
+                        int(r.group('ms')) * 1000
+                    ).timestamp()
+                    log_items.append(
+                        (timestamp, processed_file, line.replace('\n', '')))
+                    break
         pf.close()
     sorted_items = sorted(log_items, key=lambda _item: _item[0])
     # Open output file

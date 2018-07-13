@@ -32,7 +32,7 @@ if __name__ == '__main__':
                         help='run load tests', dest='load')
     args = parser.parse_args()
 
-    # Functional tests
+    # UI tests
     if args.ui:
         import pytest
         pytest.main(args=test_ui_plan)

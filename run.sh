@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Path to Python virtual environment
 ENV=~/env/testenv/bin/activate
 env_status=-1
 
@@ -33,12 +34,13 @@ function cleanup() {
 function func_test() {
     echo "Running functional tests"
     echo
-    python3 ${PYTHONPATH}/run.py --func
+    python3 ${PYTHONPATH}/run.py --ui
     echo
     echo
 }
 
 function load_test() {
+    # Do not forget to set up --host for target host
     echo "Initializing Locust for load impact"
     echo
     locust --host=http://testhost --locustfile=${PYTHONPATH}/load_test/auth.py

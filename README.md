@@ -6,8 +6,8 @@ Collection of examples and utilities for testing
 
 ##### Examples
 
-- ```load_test``` - scenario for load testing with **locust**
-- ```test_ui``` - UI tests with **seleniumbase**
+- ```load_test``` - scenario for load testing with [locust](https://locust.io/)
+- ```test_ui``` - UI tests with [seleniumbase](https://seleniumbase.com/)
 
 ##### Tools
 

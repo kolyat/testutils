@@ -8,7 +8,7 @@ import argparse
 import settings
 
 
-test_plan = [
+test_ui_plan = [
     os.path.join('test_ui', 'test_megaruss.py'),
     '--browser=chrome'
 ]
@@ -24,22 +24,24 @@ load_plan = {
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test launcher')
-    parser.add_argument('-f', '--func', action='store_true',
+    parser.add_argument('-u', '--ui', action='store_true',
                         default=False, required=False,
-                        help='run functional tests', dest='func')
+                        help='run UI tests', dest='ui')
     parser.add_argument('-l', '--load', action='store_true',
                         default=False, required=False,
                         help='run load tests', dest='load')
     args = parser.parse_args()
 
     # Functional tests
-    if args.func:
+    if args.ui:
         import pytest
-        pytest.main(args=test_plan)
+        pytest.main(args=test_ui_plan)
 
-    # Alternative code
-    # Test plan must have specified format:
-    # test_plan = [
+    # API tests
+    #
+    # This code can be used for collecting and running API tests, based on
+    # unittest library. Test plan must have specified format:
+    # test_api_plan = [
     #     'test_suite.TestCaseExample'
     # ]
     # TestCaseExample must be imported inside __init__.py of test_suite module

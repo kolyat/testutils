@@ -11,6 +11,7 @@ import stat
 import shutil
 import re
 import datetime
+import logging
 import paramiko
 from paramiko import ssh_exception
 
@@ -49,20 +50,41 @@ class Transport:
 
         :raise TransportError on client exception
         """
+        logging.info('Connecting to {}@{}:{}'.format(user, host, port))
         try:
             self._client.connect(hostname=host, port=port,
                                  username=user, password=password)
+            logging.info('Connected successfully')
         except ssh_exception.BadHostKeyException as e:
+            logging.error(
+                'Connection error - {}@{}:{} - '
+                'server’s host key could not be verified: {}'.format(
+                    user, host, port, e)
+            )
             raise TransportError('Server’s host key could not be verified', e)
         except ssh_exception.AuthenticationException as e:
+            logging.error(
+                'Connection error - {}@{}:{} - authentication failure: {}'
+                ''.format(user, host, port, e)
+            )
             raise TransportError('Authentication failure', e)
         except (ssh_exception.SSHException,
                 ssh_exception.NoValidConnectionsError) as e:
+            logging.error(
+                'Connection error - {}@{}:{} - connection failure: {}'
+                ''.format(user, host, port, e)
+            )
             raise TransportError('Connection failure', e)
+        logging.info('Setting up SFTP session')
         self._transport = self._client.get_transport()
         try:
             self._sftp = paramiko.SFTPClient.from_transport(self._transport)
+            logging.info('SFTP session established')
         except paramiko.SSHException as e:
+            logging.error(
+                '{}@{}:{} - SFTP session failure: {}'
+                ''.format(user, host, port, e)
+            )
             raise TransportError('SFTP session failure', e)
 
     def disconnect(self):
@@ -70,10 +92,12 @@ class Transport:
         """
         try:
             self._sftp.close()
+            logging.info('SFTP session closed')
         except AttributeError:
             pass
         try:
             self._client.close()
+            logging.info('Connection to server closed')
         except AttributeError:
             pass
 
@@ -87,19 +111,28 @@ class Transport:
 
         :return: list with filename and download result
         """
+        logging.info('Download files')
+        logging.info('Source: {}'.format(source_dir))
+        logging.info('Destination: {}'.format(dest_dir))
+        logging.info('Mask: {}'.format(mask))
         remote_dir = self._sftp.normalize(source_dir)
         files = self._sftp.listdir(remote_dir)
+        logging.info('All files: {}'.format(files))
         log_files = filter(lambda f: re.match(mask, f), files)
+        logging.info('Log files: {}'.format(log_files))
         for l in log_files:
             result = [l]
             try:
                 self._sftp.get(os.path.join(remote_dir, l),
                                os.path.join(dest_dir, l))
                 result.append('OK')
+                logging.info('OK - {}'.format(l))
             except IOError:
                 result.append('Fail')
+                logging.error('Failed - {}'.format(l))
             finally:
                 yield result
+        logging.info('Download completed')
 
     def __del__(self):
         self.disconnect()

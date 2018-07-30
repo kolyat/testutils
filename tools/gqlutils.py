@@ -1,4 +1,4 @@
-import re
+import logging
 import json
 import requests
 
@@ -22,13 +22,17 @@ class GqlClient:
 
         :return: response
         """
+        logging.info('Log in to {}'.format(url))
+        logging.info('User: {}'.format(kwargs.get('username')))
         _data = dict()
         if kwargs.get('username'):
             _data.update({'username': kwargs['username']})
         if kwargs.get('password'):
             _data.update({'password': kwargs['password']})
         response = self.client.post(url, data=_data)
+        logging.info('{}: {}'.format(response.status_code, response.text))
         self.cookie = '_yum_l={}'.format(response.cookies.get('_yum_l'))
+        logging.info('Got cookie: {}'.format(self.cookie))
         self.headers.update({'Cookie': self.cookie})
         return response
 
@@ -39,7 +43,10 @@ class GqlClient:
 
         :return: response
         """
-        return self.client.get(url, headers=self.headers)
+        logging.info('Log out from {}'.format(url))
+        response = self.client.get(url, headers=self.headers)
+        logging.info('{}: {}'.format(response.status_code, response.text))
+        return response
 
     def cleanup(self):
         """Close session and delete cookie info
@@ -60,13 +67,13 @@ class GqlClient:
 
         :return: response
         """
-        return self.client.post(
+        logging.info('GraphQL query to {}'.format(url))
+        logging.info(query)
+        logging.info('Variables: {}'.format(variables))
+        response = self.client.post(
             url,
             headers=self.headers,
-            data=json.dumps({
-                'query': query,
-                'variables': variables,
-                'operationName': re.match('[a-z]+ ([a-zA-Z_]+)[ (]',
-                                          query).group(1)
-            })
+            data=json.dumps({'query': query, 'variables': variables})
         )
+        logging.info('{}: {}'.format(response.status_code, response.text))
+        return response

@@ -1,4 +1,5 @@
 import random
+import logging
 import seleniumbase
 import mimesis
 import mimesis.builtins
@@ -36,6 +37,7 @@ class TestOsago(seleniumbase.BaseCase):
         """1 - Driver check
         """
         person = new_person()
+        logging.info('Person: {}'.format(person))
         self.open('http://megarussd.dev.b2bpolis.ru/#/calculator/osago/')
         self.send_keys('#id_driver_osago_last_name_0', person['last_name'])
         self.send_keys('#id_driver_osago_first_name_0', person['first_name'])
@@ -52,6 +54,7 @@ class TestOsago(seleniumbase.BaseCase):
         """2 - Registration
         """
         person = new_person()
+        logging.info('Person: {}'.format(person))
         self.open('http://megarussd.dev.b2bpolis.ru/#/registration')
         self.click('#id_is_natural_person')
         self.send_keys('#id_last_name', person['last_name'])

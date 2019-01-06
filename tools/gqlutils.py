@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018 Kirill 'Kolyat' Kiselnikov
+# Copyright (c) 2017-2019 Kirill 'Kolyat' Kiselnikov
 # This file is the part of testutils, released under modified MIT license
 # See the file LICENSE included in this distribution
 
@@ -10,7 +10,7 @@ import requests
 class GqlClient:
     """
     Simple client for interaction with GraphQL API.
-    It can be used together with unittest.TestCase and locust.TaskSet classes
+    It can be used as mixin with unittest.TestCase and locust.TaskSet classes
     """
     client = requests.Session()
     cookie = None

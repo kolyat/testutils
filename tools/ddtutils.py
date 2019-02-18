@@ -2,6 +2,7 @@
 # This file is the part of testutils, released under modified MIT license
 # See the file LICENSE included in this distribution
 
+
 class NamedList(list):
     """Custom list with __name__ attribute, which is added by prepare()"""
     pass

@@ -1,9 +1,10 @@
 requests
+paramiko
 ddt
+pytest
+selenium
+pytest-selenium
 locustio
 invokust
-seleniumbase
-mimesis
-paramiko
 radar
 forgery_py

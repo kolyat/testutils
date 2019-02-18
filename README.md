@@ -6,8 +6,8 @@ Collection of examples and utilities for testing
 
 ##### Examples
 
-- ```load_test``` - scenario for load testing with [locust](https://locust.io/)
-- ```test_ui``` - UI tests with [seleniumbase](https://seleniumbase.com/)
+- ```load``` - basic scenario for load testing with [locust](https://locust.io/)
+- ```pom``` - web UI tests using Page Object Model
 
 ##### Tools
 
@@ -19,10 +19,8 @@ Collection of examples and utilities for testing
 
 ##### Common files
 
+- ```pytest.ini``` - pytest settings
 - ```settings.py``` - various framework settings
-- ```run.py``` - test launcher, contains test plans and options
-- ```run.sh``` - shell script as an alternative for python virtualenv 
-                 activation and test run
 
 ### Requirements
 

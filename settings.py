@@ -5,7 +5,8 @@ import logging
 #
 LOG_OPTIONS = {
     'filemode': 'w',
-    'format': '%(asctime)s [%(module)15s] %(levelname)7s - %(funcName)s - %(message)s',
+    'format': '%(asctime)s [%(module)15s] %(levelname)7s -'
+              ' %(funcName)s - %(message)s',
     'level': logging.INFO
 }
 
@@ -13,7 +14,7 @@ LOG_OPTIONS = {
 # Endpoints
 #
 # Relative paths (_PATH) are used in locust scenarios
-# Absolute paths (_URL) are used in API tests
+# Absolute paths (_URL) are used in functional tests
 #
 PROTOCOL = 'http://'
 HOST = 'testhost'
@@ -24,3 +25,10 @@ LOGIN_URL = '{}{}'.format(BASE_URL, LOGIN_PATH)
 
 LOGOUT_PATH = '/logout'
 LOGOUT_URL = '{}{}'.format(BASE_URL, LOGOUT_PATH)
+
+#
+# Selenium
+#
+IMPLICIT_WAIT = 0
+TIMEOUT = 5
+POLL_FREQUENCY = 1

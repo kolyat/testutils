@@ -11,12 +11,12 @@ class BaseModel:
     def __init__(self, driver):
         self.driver = driver
 
-    def get_element(self, selector, path):
+    def get_element(self, selector, path, timeout=settings.TIMEOUT,
+                    poll_frequency=settings.POLL_FREQUENCY):
         try:
-            element = WebDriverWait(
-                driver=self.driver, timeout=settings.TIMEOUT,
-                poll_frequency=settings.POLL_FREQUENCY
-            ).until(lambda driver: driver.find_element(selector, path))
+            element = WebDriverWait(driver=self.driver, timeout=timeout,
+                                    poll_frequency=poll_frequency).until(
+                lambda driver: driver.find_element(selector, path))
             return element
         except exceptions.TimeoutException:
             return None

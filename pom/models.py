@@ -35,9 +35,9 @@ class LoginPageModel(BaseModel,
     def enter_login(self, login):
         self._login_field.send_keys(login)
         self.submit()
-        self._password_field = self.get_element(*self.PASSWORD_FIELD)
 
     def enter_password(self, password):
+        self._password_field = self.get_element(*self.PASSWORD_FIELD)
         self._password_field.send_keys(password)
 
     def submit(self):

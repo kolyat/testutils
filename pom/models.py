@@ -29,16 +29,13 @@ class LoginPageModel(BaseModel,
     def __init__(self, driver):
         super().__init__(driver)
         self.driver.get(self.URL)
-        self._login_field = self.get_element(*self.LOGIN_FIELD)
-        self._password_field = None
 
     def enter_login(self, login):
-        self._login_field.send_keys(login)
+        self.get_element(*self.LOGIN_FIELD).send_keys(login)
         self.submit()
 
     def enter_password(self, password):
-        self._password_field = self.get_element(*self.PASSWORD_FIELD)
-        self._password_field.send_keys(password)
+        self.get_element(*self.PASSWORD_FIELD).send_keys(password)
 
     def submit(self):
         self.get_element(*self.SUBMIT_BUTTON).click()

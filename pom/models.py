@@ -1,7 +1,7 @@
 from selenium.common import exceptions
 from selenium.webdriver.support.ui import WebDriverWait
 
-import settings
+import config
 from . import locators
 
 
@@ -11,8 +11,8 @@ class BaseModel:
     def __init__(self, driver):
         self.driver = driver
 
-    def get_element(self, selector, path, timeout=settings.TIMEOUT,
-                    poll_frequency=settings.POLL_FREQUENCY):
+    def get_element(self, selector, path, timeout=config.TIMEOUT,
+                    poll_frequency=config.POLL_FREQUENCY):
         try:
             element = WebDriverWait(driver=self.driver, timeout=timeout,
                                     poll_frequency=poll_frequency).until(

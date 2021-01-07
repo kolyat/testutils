@@ -8,10 +8,6 @@ from utils.codes import API_CODES
 from utils import client, rnd
 
 
-logging.config.dictConfig(config.current_config.logging)
-logger = logging.getLogger(__name__)
-
-
 def test_auth_start():
     """Test 1-st step of multistep authentication.
     """

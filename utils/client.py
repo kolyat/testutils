@@ -14,8 +14,7 @@ import config
 from . import urls
 
 
-logging.config.dictConfig(config.current_config.logging)
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class EmailClient:
@@ -61,10 +60,10 @@ class EmailClient:
         if self.current_folder != inbox:
             self.client.select_folder(inbox)
             self.current_folder = inbox
-            logger.info(f'Go to {inbox}')
+            log.info(f'Go to {inbox}')
         try:
             uid = max(self.client.search(['UNSEEN', 'TEXT', 'sendgrid']))
-            logger.info(f'Found latest recovery mail: UID #{uid}')
+            log.info(f'Found latest recovery mail: UID #{uid}')
         except ValueError:
             uid = None
         return uid
@@ -84,9 +83,9 @@ class EmailClient:
         body = str(decoded_msg.get_payload(decode=True))
         try:
             r = re.search(r'href="(\S+sendgrid\S+)" target', body).group(1)
-            logger.info(f'Found password recovery link: {r}')
+            log.info(f'Found password recovery link: {r}')
         except AttributeError:
-            logger.warning(f'Password recovery link was not found in #{uid}')
+            log.warning(f'Password recovery link was not found in #{uid}')
             r = None
         return r
 
@@ -115,14 +114,14 @@ class HTTPClient:
         :return: response object
         :rtype: requests.Response
         """
-        logger.debug(f'GET {url}')
+        log.debug(f'GET {url}')
         response = self.session.get(url, **kwargs)
-        logger.debug(f'{response.status_code}: '
-                     f'{responses.get(response.status_code, "<unknown>")}')
+        log.debug(f'{response.status_code}: '
+                  f'{responses.get(response.status_code, "<unknown>")}')
         if response.text != '':
-            logger.debug(f'Body: {response.text}')
+            log.debug(f'Body: {response.text}')
         else:
-            logger.debug('No body')
+            log.debug('No body')
         self.latest_response = response
         return response
 
@@ -143,20 +142,20 @@ class HTTPClient:
         :return: response object
         :rtype: requests.Response
         """
-        logger.debug(f'POST {url}')
+        log.debug(f'POST {url}')
         if kwargs.get('json', None):
-            logger.debug(f'Body (JSON): {json.dumps(kwargs["json"])}')
+            log.debug(f'Body (JSON): {json.dumps(kwargs["json"])}')
         elif kwargs.get('data', None):
-            logger.debug(f'Body (data): {str(kwargs["data"])}')
+            log.debug(f'Body (data): {str(kwargs["data"])}')
         else:
-            logger.debug('No body')
+            log.debug('No body')
         response = self.session.post(url, **kwargs)
-        logger.debug(f'{response.status_code}: '
-                     f'{responses.get(response.status_code, "<unknown>")}')
+        log.debug(f'{response.status_code}: '
+                  f'{responses.get(response.status_code, "<unknown>")}')
         if response.text != '':
-            logger.debug(f'Body: {response.text}')
+            log.debug(f'Body: {response.text}')
         else:
-            logger.debug('No body')
+            log.debug('No body')
         self.latest_response = response
         return response
 
@@ -177,20 +176,20 @@ class HTTPClient:
         :return: response object
         :rtype: requests.Response
         """
-        logger.debug(f'PUT {url}')
+        log.debug(f'PUT {url}')
         if kwargs.get('json', None):
-            logger.debug(f'Body (JSON): {json.dumps(kwargs["json"])}')
+            log.debug(f'Body (JSON): {json.dumps(kwargs["json"])}')
         elif kwargs.get('data', None):
-            logger.debug(f'Body (data): {str(kwargs["data"])}')
+            log.debug(f'Body (data): {str(kwargs["data"])}')
         else:
-            logger.debug('No body')
+            log.debug('No body')
         response = self.session.put(url, **kwargs)
-        logger.debug(f'{response.status_code}: '
-                     f'{responses.get(response.status_code, "<unknown>")}')
+        log.debug(f'{response.status_code}: '
+                  f'{responses.get(response.status_code, "<unknown>")}')
         if response.text != '':
-            logger.debug(f'Body: {response.text}')
+            log.debug(f'Body: {response.text}')
         else:
-            logger.debug('No body')
+            log.debug('No body')
         self.latest_response = response
         return response
 
@@ -212,7 +211,7 @@ class ArClient(HTTPClient):
         :rtype: str
         """
         access_token = self.session.cookies.get('access_token')
-        logger.debug(f'Access token: {access_token}')
+        log.debug(f'Access token: {access_token}')
         return access_token
 
     @property
@@ -222,7 +221,7 @@ class ArClient(HTTPClient):
         :rtype: str
         """
         refresh_token = self.session.cookies.get('refresh_token')
-        logger.debug(f'Refresh token: {refresh_token}')
+        log.debug(f'Refresh token: {refresh_token}')
         return refresh_token
 
     #
@@ -244,12 +243,12 @@ class ArClient(HTTPClient):
         password = config.current_config.get_user()['userpass']
         _json = kwargs.get('json', None)
         payload = _json if _json else {'email': login, 'password': password}
-        logger.info(f'Basic auth: log in under {login}')
+        log.info(f'Basic auth: log in under {login}')
         response = self.post(url, json=payload)
         if response.status_code != 200:
-            logger.warning('Basic auth failed')
+            log.warning('Basic auth failed')
         else:
-            logger.info('Basic auth passed')
+            log.info('Basic auth passed')
         return response, self.access_token, self.refresh_token
 
     #
@@ -263,21 +262,21 @@ class ArClient(HTTPClient):
         :rtype: Tuple[requests.Response, Union[str, None]
         """
         url = config.current_config.api_uri() + urls.AUTH_STEP_START
-        logger.info('Get auth session ID')
+        log.info('Get auth session ID')
         response = self.post(url)
         session_id = None
         if response.text != '':
             try:
                 session_id = response.json()['session_id']
-                logger.info(f'Got session ID: {session_id}')
+                log.info(f'Got session ID: {session_id}')
             except ValueError as e:
-                logger.error('Invalid JSON in response')
-                logger.error(e)
+                log.error('Invalid JSON in response')
+                log.error(e)
             except KeyError as e:
-                logger.error('Session ID not found')
-                logger.error(e)
+                log.error('Session ID not found')
+                log.error(e)
         else:
-            logger.error('Unable to get session ID: empty body in response')
+            log.error('Unable to get session ID: empty body in response')
         self.session_ids.append(session_id)
         return response, session_id
 
@@ -296,12 +295,12 @@ class ArClient(HTTPClient):
         _json = kwargs.get('json', None)
         payload = _json if _json \
             else {'session_id': session_id, 'login': login}
-        logger.info(f'Check login: {login}')
+        log.info(f'Check login: {login}')
         response = self.post(url, json=payload)
         if response.status_code != 200:
-            logger.warning('Check login failed')
+            log.warning('Check login failed')
         else:
-            logger.info('Check login OK')
+            log.info('Check login OK')
         return response
 
     def check_password(self, **kwargs: Any) -> requests.Response:
@@ -319,12 +318,12 @@ class ArClient(HTTPClient):
         _json = kwargs.get('json', None)
         payload = _json if _json \
             else {'session_id': session_id, 'password': password}
-        logger.info(f'Check password: {password}')
+        log.info(f'Check password: {password}')
         response = self.post(url, json=payload)
         if response.status_code != 200:
-            logger.warning('Check password failed')
+            log.warning('Check password failed')
         else:
-            logger.info('Check password OK')
+            log.info('Check password OK')
         return response
 
     def finish_auth(self, **kwargs: Any) -> \
@@ -341,12 +340,12 @@ class ArClient(HTTPClient):
         session_id = self.session_ids[-1]
         _json = kwargs.get('json', None)
         payload = _json if _json else {'session_id': session_id}
-        logger.info(f'Finishing auth')
+        log.info(f'Finishing auth')
         response = self.post(url, json=payload)
         if response.status_code != 200:
-            logger.warning('Authentication failed')
+            log.warning('Authentication failed')
         else:
-            logger.info('Authentication passed')
+            log.info('Authentication passed')
         return response, self.access_token, self.refresh_token
 
     #
@@ -368,7 +367,7 @@ class ArClient(HTTPClient):
             self.check_password()
             self.finish_auth()
         else:
-            logger.error(f'Unknown type of auth: {auth}')
+            log.error(f'Unknown type of auth: {auth}')
         return
 
     def logout(self) -> requests.Response:
@@ -378,12 +377,12 @@ class ArClient(HTTPClient):
         :rtype: requests.Response
         """
         url = config.current_config.api_uri() + urls.AUTH_LOGOUT
-        logger.info('Log out...')
+        log.info('Log out...')
         response = self.post(url)
         if response.status_code != 200:
-            logger.warning('Logout failed')
+            log.warning('Logout failed')
         else:
-            logger.info('Logout completed')
+            log.info('Logout completed')
         return response
 
     #
@@ -404,13 +403,13 @@ class ArClient(HTTPClient):
         if _header:
             c = [p in _header for p in params]
             if all(c):
-                logger.info('Cache-Control OK')
+                log.info('Cache-Control OK')
                 result = True
             else:
-                logger.warning(f'Cache-Control expected: {", ".join(params)}')
-                logger.warning(f'Cache-Control actual: {_header}')
+                log.warning(f'Cache-Control expected: {", ".join(params)}')
+                log.warning(f'Cache-Control actual: {_header}')
         else:
-            logger.warning('Response header Cache-Control is not found')
+            log.warning('Response header Cache-Control is not found')
         return result
 
     def check_pragma(self) -> bool:
@@ -424,13 +423,13 @@ class ArClient(HTTPClient):
         _header = self.latest_response.headers.get('Pragma', False)
         if _header:
             if 'no-cache' in _header:
-                logger.info('Pragma OK')
+                log.info('Pragma OK')
                 result = True
             else:
-                logger.warning('Pragma expected: no-cache')
-                logger.warning(f'Pragma actual: {_header}')
+                log.warning('Pragma expected: no-cache')
+                log.warning(f'Pragma actual: {_header}')
         else:
-            logger.warning('Response header Pragma is not found')
+            log.warning('Response header Pragma is not found')
         return result
 
 
@@ -454,22 +453,22 @@ class ArClientPasswdRecovery(ArClient):
         :rtype: Tuple[requests.Response, Union[str, None]
         """
         url = config.current_config.api_uri() + urls.PASSWD_START
-        logger.info('Password recovery: get session ID')
+        log.info('Password recovery: get session ID')
         response = self.post(url)
         session_id = None
         if response.text != '':
             try:
                 session_id = response.json()['session_id']
-                logger.info(f'Password recovery: session ID: {session_id}')
+                log.info(f'Password recovery: session ID: {session_id}')
             except ValueError as e:
-                logger.error('Password recovery: invalid JSON in response')
-                logger.error(e)
+                log.error('Password recovery: invalid JSON in response')
+                log.error(e)
             except KeyError as e:
-                logger.error('Password recovery: session ID not found')
-                logger.error(e)
+                log.error('Password recovery: session ID not found')
+                log.error(e)
         else:
-            logger.error('Password recovery: unable to get session ID - '
-                         'empty body in response')
+            log.error('Password recovery: unable to get session ID - '
+                      'empty body in response')
         self.passwd_session_ids.append(session_id)
         return response, session_id
 
@@ -488,12 +487,12 @@ class ArClientPasswdRecovery(ArClient):
         _json = kwargs.get('json', None)
         payload = _json if _json \
             else {'session_id': session_id, 'login': login}
-        logger.info(f'Password recovery: check login {login}')
+        log.info(f'Password recovery: check login {login}')
         response = self.post(url, json=payload)
         if response.status_code != 200:
-            logger.warning('Password recovery: login checking failed')
+            log.warning('Password recovery: login checking failed')
         else:
-            logger.info('Password recovery: login checking OK')
+            log.info('Password recovery: login checking OK')
         return response
 
     def passwd_send_mail(self, **kwargs: Any) -> requests.Response:
@@ -509,12 +508,12 @@ class ArClientPasswdRecovery(ArClient):
         session_id = self.passwd_session_ids[-1]
         _json = kwargs.get('json', None)
         payload = _json if _json else {'session_id': session_id}
-        logger.info('Password recovery: send e-mail')
+        log.info('Password recovery: send e-mail')
         response = self.post(url, json=payload)
         if response.status_code != 200:
-            logger.warning('Password recovery: sending failed')
+            log.warning('Password recovery: sending failed')
         else:
-            logger.info('Password recovery: sending passed')
+            log.info('Password recovery: sending passed')
         return response
 
     def passwd_check_key(self, **kwargs: Any) -> requests.Response:
@@ -548,12 +547,12 @@ class ArClientPasswdRecovery(ArClient):
             payload = kwargs['json']
         else:
             pass
-        logger.info('Password recovery: check secret key')
+        log.info('Password recovery: check secret key')
         response = self.post(url, json=payload)
         if response.status_code != 200:
-            logger.warning('Password recovery: secret key checking failed')
+            log.warning('Password recovery: secret key checking failed')
         else:
-            logger.info('Password recovery: secret key checking passed')
+            log.info('Password recovery: secret key checking passed')
         return response
 
     def passwd_finish(self, **kwargs: Any) -> requests.Response:
@@ -576,12 +575,12 @@ class ArClientPasswdRecovery(ArClient):
             payload = kwargs['json']
         else:
             pass
-        logger.info('Password recovery: set up new password')
+        log.info('Password recovery: set up new password')
         response = self.post(url, json=payload)
         if response.status_code != 200:
-            logger.warning('Password recovery: failed to set up new password')
+            log.warning('Password recovery: failed to set up new password')
         else:
-            logger.info('Password recovery procedure finished')
+            log.info('Password recovery procedure finished')
         return response
 
 

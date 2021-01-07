@@ -1,6 +1,8 @@
 from typing import Union
 import os
 import json
+import logging
+import http.client
 
 import config
 
@@ -149,3 +151,20 @@ class Config(dict):
         _target = self.target[target]
         _user = _target['users'][user]
         return _user
+
+
+httpclient_logger = logging.getLogger('http.client')
+
+
+def httpclient_logging_patch(level: int = logging.DEBUG) -> None:
+    """Enable HTTPConnection debug logging to the logging framework
+
+    :param level: logging level (logging.DEBUG = 10 by default)
+    :type level: int
+    """
+
+    def httpclient_log(*args: Any) -> None:
+        httpclient_logger.log(level, ' '.join(args))
+
+    http.client.print = httpclient_log
+    http.client.HTTPConnection.debuglevel = 1

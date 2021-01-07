@@ -1,3 +1,5 @@
+import logging
+
 from utils import service
 
 
@@ -40,6 +42,25 @@ DEFAULT_LOGGING_CONFIG = {
             'formatter': 'standard',
             'level': 'INFO',
             'stream': 'ext://sys.stdout'
+        },
+        'http_file': {
+            'class': 'logging.FileHandler',
+            'filename': './logs/http.log',
+            'formatter': 'standard',
+            'level': 'DEBUG',
+            'mode': 'a'
+        }
+    },
+    'loggers': {
+        'urllib3': {
+            'handlers': ['http_file'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'http.client': {
+            'handlers': ['http_file'],
+            'level': 'DEBUG',
+            'propagate': False
         }
     },
     'root': {
@@ -64,3 +85,6 @@ POLL_FREQUENCY = 1
 
 current_config = service.Config()
 current_config.update_config('config.json')
+
+logging.config.dictConfig(current_config.logging)
+service.httpclient_logging_patch()

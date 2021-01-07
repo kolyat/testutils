@@ -43,11 +43,29 @@
         "formatter": "precise",
         "level": "DEBUG",
         "mode": "a"
+      },
+      "http_console" : {
+        "class": "logging.StreamHandler",
+        "formatter": "standard",
+        "level": "DEBUG",
+        "stream": "ext://sys.stdout"
+      },
+      "http_file": {
+        "class": "logging.FileHandler",
+        "filename": "./logs/http.log",
+        "formatter": "standard",
+        "level": "DEBUG",
+        "mode": "a"
       }
     },
     "loggers": {
-      "extended": {
-        "handlers": ["console", "file"],
+      "urllib3": {
+        "handlers": ["http_file"],
+        "level": "DEBUG",
+        "propagate": false
+      },
+      "http.client": {
+        "handlers": ["http_file"],
         "level": "DEBUG",
         "propagate": false
       }

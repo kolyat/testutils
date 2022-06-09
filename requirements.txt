@@ -1,13 +1,5 @@
-requests==2.25.1
-pytest==6.2.1
 keyring==21.4.0
 imapclient==2.1.0
-
-selenium
-pytest_selenium
-
-locustio
-invokust
 
 paramiko
 radar

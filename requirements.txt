@@ -4,3 +4,6 @@ imapclient==2.1.0
 paramiko
 radar
 forgery_py
+
+pure_python_adb
+openpyxl

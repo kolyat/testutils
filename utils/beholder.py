@@ -14,7 +14,7 @@ PACKAGE = 'com.android.systemui'
 
 WORKBOOK = 'meminfo.xlsx'  # Full path
 
-TIME = 1  # Minutes of total working time
+TIME = 20  # Minutes of total working time
 DELAY = 3  # Seconds between requests
 
 
@@ -43,26 +43,20 @@ if __name__ == '__main__':
         wb = openpyxl.Workbook()
         wb.save(WORKBOOK)
         print(f'Create {WORKBOOK}')
-    _ts = str(ts())
-    ws = wb.create_sheet(_ts, 0)
-    a1 = 'Timestamp'
+    ws = wb.create_sheet(str(ts()), 0)
     b1 = 'RAM used, K'
-    # ws['A1'] = a1
-    ws['B1'] = b1
     row = 2
 
     # Collect data
     print(f'Starting to collect data for {PACKAGE}')
-    print('{:>15} {:>15}'.format(a1, b1))
+    print('{:>15}'.format(b1))
     wtime = TIME * 60
     while wtime > 0:
         raw = device.shell(f'dumpsys meminfo | grep {PACKAGE}')
         result = int(raw.strip().split('K')[0].replace(',', ''))
-        _ts = ts()
-        ws.cell(row=row, column=1, value=_ts)
-        ws.cell(row=row, column=2, value=result)
+        ws.cell(row=row, column=1, value=result)
         wb.save(WORKBOOK)
-        print('{:>15} {:>15}'.format(_ts, result))
+        print('{:>15}'.format(result))
         time.sleep(DELAY)
         row += 1
         wtime -= DELAY
